@@ -3,12 +3,13 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { KTX2Loader } from "three/addons/loaders/KTX2Loader.js";
 import { clone as cloneSkeleton } from "three/addons/utils/SkeletonUtils.js";
 import { ASSET_MANIFEST } from "./AssetManifest.js";
+import { publicPath } from "./Paths.js";
 
 export class AssetManager {
   constructor() {
     this.loader = new GLTFLoader();
-    this.dracoLoader = new DRACOLoader().setDecoderPath("/decoders/draco/");
-    this.ktx2Loader = new KTX2Loader().setTranscoderPath("/decoders/basis/");
+    this.dracoLoader = new DRACOLoader().setDecoderPath(publicPath("decoders/draco/"));
+    this.ktx2Loader = new KTX2Loader().setTranscoderPath(publicPath("decoders/basis/"));
     this.loader.setDRACOLoader(this.dracoLoader);
     this.cache = new Map();
     this.failures = new Set();

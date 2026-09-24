@@ -19,6 +19,7 @@ export class Game {
   }
   async init() {
     this.kitchen = new KitchenScene(this.container);
+    this.kitchen.renderer.setAnimationLoop(() => this.update());
     this.audio.configureCamera(this.kitchen.camera);
     this.assets.configureRenderer(this.kitchen.renderer);
     await this.kitchen.loadVisualAssets(this.assets);
@@ -33,10 +34,14 @@ export class Game {
     this.xr = new XRManager(this.kitchen.renderer, this.kitchen.scene, this.kitchen.camera, this.grab);
     this.recipe.connect({ kitchen: this.kitchen, grabManager: this.grab, customerManager: this.customer, physicsManager: this.physics });
     this.bindUI();
-    await this.xr.init();
+    try {
+      await this.xr.init();
+    } catch (error) {
+      console.warn("WebXR indisponible, poursuite en mode écran :", error);
+      document.querySelector("#unsupported").hidden = false;
+    }
     this.customer.startOrder();
     this.recipe.start();
-    this.kitchen.renderer.setAnimationLoop(() => this.update());
     document.querySelector("#status").textContent = "Cuisine prête — entrez en VR ou testez à la souris.";
   }
   bindUI() {
@@ -52,7 +57,7 @@ export class Game {
   update() {
     const delta = Math.min(this.clock.getDelta(), .05);
     const time = this.clock.elapsedTime;
-    this.grab.update(); this.recipe.update(delta); this.physics.update(delta); this.customer.update(delta, time); this.ui.update(time); this.kitchen.update(delta, time);
+    this.grab?.update(); this.recipe?.update(delta); this.physics?.update(delta); this.customer?.update(delta, time); this.ui?.update(time); this.kitchen.update(delta, time);
     this.kitchen.renderer.render(this.kitchen.scene, this.kitchen.camera);
   }
 }

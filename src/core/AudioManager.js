@@ -1,14 +1,15 @@
 import * as THREE from "three";
+import { publicPath } from "./Paths.js";
 
 export const AUDIO_MANIFEST = Object.freeze({
-  village: "/audio/village-ambience.ogg",
-  wind: "/audio/mediterranean-wind.ogg",
-  birds: "/audio/birds.ogg",
-  crack: "/audio/egg-crack.ogg",
-  mix: "/audio/whisk.ogg",
-  pour: "/audio/pour.ogg",
-  oven: "/audio/oven.ogg",
-  success: "/audio/success.ogg"
+  village: publicPath("audio/village-ambience.ogg"),
+  wind: publicPath("audio/mediterranean-wind.ogg"),
+  birds: publicPath("audio/birds.ogg"),
+  crack: publicPath("audio/egg-crack.ogg"),
+  mix: publicPath("audio/whisk.ogg"),
+  pour: publicPath("audio/pour.ogg"),
+  oven: publicPath("audio/oven.ogg"),
+  success: publicPath("audio/success.ogg")
 });
 
 export class AudioManager {

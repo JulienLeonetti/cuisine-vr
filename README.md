@@ -67,3 +67,9 @@ http://localhost:5173/?physicsDebug=1
 ```
 
 Le commutateur global se trouve dans `src/core/DebugConfig.js` et reste à `false` pour la version normale.
+
+## Déploiement GitHub Pages
+
+Le build utilise le préfixe `/cuisine-vr/` défini dans `vite.config.js`. Chaque push sur `main` déclenche `.github/workflows/deploy.yml`, construit `dist/` avec `npm ci` puis le publie avec les actions GitHub Pages officielles.
+
+Dans **Settings → Pages**, la source de publication doit être **GitHub Actions**. Le site est ensuite disponible à l’adresse `https://julienleonetti.github.io/cuisine-vr/`.
