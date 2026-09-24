@@ -19,11 +19,15 @@ export class Game {
   }
   async init() {
     this.kitchen = new KitchenScene(this.container);
+    this.audio.configureCamera(this.kitchen.camera);
+    this.assets.configureRenderer(this.kitchen.renderer);
+    await this.kitchen.loadVisualAssets(this.assets);
     this.physics = new PhysicsManager();
-    await this.physics.init();
+    await this.physics.init(this.kitchen.scene);
     this.kitchen.registerPhysics(this.physics);
     this.ui = new VRUIManager(this.kitchen.scene);
     this.customer = new CustomerManager(this.kitchen.scene, this.ui, this.audio);
+    await this.customer.loadAssets(this.assets);
     this.recipe = new RecipeManager(new FiadoneRecipe(), this.ui, this.audio);
     this.grab = new GrabManager(this.kitchen.scene, this.kitchen.camera, this.kitchen.renderer, this.kitchen.grabbables, this.kitchen.controls, this.physics);
     this.xr = new XRManager(this.kitchen.renderer, this.kitchen.scene, this.kitchen.camera, this.grab);

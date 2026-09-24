@@ -17,16 +17,23 @@ export class OrderPanel {
   }
   drawRecipe(name, step, index, total, detail = step.detail, complete = false) {
     const ctx = this.context; const { width, height } = this.canvas;
-    ctx.clearRect(0, 0, width, height); ctx.fillStyle = this.background; this.roundedRect(ctx, 0, 0, width, height, 30);
-    ctx.fillStyle = complete ? "#52704f" : "#b5533d"; ctx.fillRect(0, 0, 14, height);
-    ctx.fillStyle = "#b5533d"; ctx.font = "700 25px system-ui"; ctx.fillText(complete ? "✓ TERMINÉ" : "COMMANDE", 52, 58);
-    ctx.fillStyle = "#28382f"; ctx.font = "700 56px Georgia"; ctx.fillText(name.toUpperCase(), 52, 123);
+    ctx.clearRect(0, 0, width, height);
+    const background = ctx.createLinearGradient(0, 0, width, height); background.addColorStop(0, "#fffaf0"); background.addColorStop(1, "#efe2c9");
+    ctx.fillStyle = background; this.roundedRect(ctx, 0, 0, width, height, 30);
+    ctx.fillStyle = complete ? "#587553" : "#b95740"; ctx.fillRect(0, 0, 15, height);
+    ctx.fillStyle = complete ? "#587553" : "#293c32"; ctx.beginPath(); ctx.roundRect(48, 28, 230, 48, 24); ctx.fill();
+    ctx.fillStyle = "#fff8e9"; ctx.font = "800 22px system-ui"; ctx.fillText(complete ? "✓  TERMINÉ" : "COMMANDE DU JOUR", 71, 59);
+    ctx.fillStyle = "#29382f"; ctx.font = "700 56px Georgia"; ctx.fillText(name, 48, 132);
+    ctx.fillStyle = "#c76c49"; ctx.beginPath(); ctx.arc(width - 82, 80, 43, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff7e8"; ctx.font = "700 29px Georgia"; ctx.textAlign = "center"; ctx.fillText("AT", width - 82, 90); ctx.textAlign = "left";
     const progress = Math.min((index + 1) / total, 1);
-    ctx.fillStyle = "#ddd5c6"; ctx.beginPath(); ctx.roundRect(52, 151, width - 104, 10, 5); ctx.fill();
-    ctx.fillStyle = complete ? "#52704f" : "#c66b48"; ctx.beginPath(); ctx.roundRect(52, 151, (width - 104) * progress, 10, 5); ctx.fill();
-    ctx.fillStyle = "#6b776f"; ctx.font = "700 23px system-ui"; ctx.fillText(`ÉTAPE ${Math.min(index + 1, total)} / ${total}`, 52, 207);
-    ctx.fillStyle = "#26372e"; ctx.font = "650 33px system-ui"; this.wrapText(step.instruction, 52, 260, width - 104, 41);
-    ctx.fillStyle = "#867b6e"; ctx.font = "500 23px system-ui"; this.wrapText(detail, 52, 360, width - 104, 29);
+    ctx.fillStyle = "#d8cebc"; ctx.beginPath(); ctx.roundRect(48, 155, width - 96, 10, 5); ctx.fill();
+    ctx.fillStyle = complete ? "#587553" : "#c66b48"; ctx.beginPath(); ctx.roundRect(48, 155, (width - 96) * progress, 10, 5); ctx.fill();
+    ctx.fillStyle = "#b95740"; ctx.beginPath(); ctx.arc(78, 223, 35, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff8e9"; ctx.font = "800 24px system-ui"; ctx.textAlign = "center"; ctx.fillText(String(Math.min(index + 1, total)).padStart(2, "0"), 78, 232); ctx.textAlign = "left";
+    ctx.fillStyle = "#68746c"; ctx.font = "800 21px system-ui"; ctx.fillText(`ÉTAPE ${Math.min(index + 1, total)} / ${total}`, 132, 211);
+    ctx.fillStyle = "#26372e"; ctx.font = "650 31px system-ui"; this.wrapText(step.instruction, 132, 251, width - 180, 38);
+    ctx.fillStyle = "#817667"; ctx.font = "500 22px system-ui"; this.wrapText(detail, 48, 365, width - 96, 28);
     this.texture.needsUpdate = true;
   }
   drawSpeech(text, title = "MARCEL") {

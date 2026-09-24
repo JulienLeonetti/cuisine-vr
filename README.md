@@ -1,47 +1,69 @@
 # À Tavula VR
 
-Prototype de cuisine corse en WebXR, optimisé pour les contrôleurs Meta Quest. Le mode écran sert au développement, mais toutes les actions de jeu fonctionnent indépendamment avec les contrôleurs en session immersive.
+Petit jeu de cuisine corse en Three.js, JavaScript, Vite, WebXR et Rapier. La première commande jouable est un fiadone : casser trois œufs, ajouter les ingrédients, fouetter, verser, cuire puis servir Marcel.
 
-La simulation utilise `@dimforge/rapier3d-compat` : le décor possède des colliders fixes et les ingrédients des corps rigides dynamiques. Pendant une prise, un objet passe en mode cinématique puis redevient dynamique au lâcher. Les objets tombés sous la scène sont automatiquement replacés à leur point d’origine.
-
-## Développement sur ordinateur
+## Lancer le projet
 
 ```bash
 npm install
 npm run dev
 ```
 
-Ouvrir `http://localhost:5173`. À la souris, cliquer-glisser un objet pour simuler sa manipulation.
+Le mode écran permet de cliquer-glisser les objets. Pour un Meta Quest, construisez avec `npm run build`, hébergez `dist/` en HTTPS, ouvrez l’URL dans Meta Quest Browser puis choisissez **ENTRER EN VR**. `npm run dev:quest` expose aussi Vite sur le réseau local, mais WebXR nécessite toujours un contexte sécurisé.
 
-## Tester avec un Meta Quest
+## Architecture de jeu
 
-WebXR exige un contexte sécurisé : HTTPS, ou `localhost` lorsque le navigateur et le serveur sont sur le même appareil.
+- `src/core/AssetManager.js` : chargement, cache et clonage GLB, Draco et KTX2.
+- `src/core/AssetManifest.js` : chemins, activation et échelle de chaque asset final.
+- `src/core/PhysicsManager.js` : Rapier à pas fixe, CCD, prises cinématiques et lâchers sûrs.
+- `src/interactions/` : systèmes séparés pour les œufs, le mélange, le versement, la cuisson et le service.
+- `src/objects/Food.js` : états visuels de la préparation crue et du fiadone cuit.
+- `src/placeholders/` : visuels provisoires, indépendants du gameplay.
 
-1. Construire le projet avec `npm run build`.
-2. Héberger le dossier `dist/` sur un hébergement HTTPS (Cloudflare Pages, Netlify, Vercel ou équivalent).
-3. Ouvrir l’URL HTTPS dans Meta Quest Browser.
-4. Appuyer sur **ENTRER EN VR** et autoriser l’accès WebXR.
-5. Utiliser la gâchette des contrôleurs pour pointer, saisir et relâcher.
+La prise VR combine un rayon court et une prise de proximité. Les modèles visuels sont enfants de slots physiques stables : remplacer un placeholder par un GLB ne change ni les identifiants de recette ni les colliders.
 
-Pour exposer Vite sur le réseau local :
+## Ajouter les vrais GLB
+
+Déposez le fichier au chemin indiqué, puis passez son entrée à `enabled: true` dans `src/core/AssetManifest.js`. Les modèles sont mis en cache et clonés, tandis que les animations squelettiques utilisent `SkeletonUtils`.
+
+Assets GLB encore à fournir :
+
+| Élément | Chemin attendu |
+|---|---|
+| Client riggé, clips `idle`, `talk`, `happy`, `leave` | `public/models/characters/customer.glb` |
+| Comptoir final | `public/models/kitchen/counter.glb` |
+| Four final | `public/models/kitchen/oven.glb` |
+| Saladier | `public/models/kitchen/bowl.glb` |
+| Œuf | `public/models/ingredients/egg.glb` |
+| Citron | `public/models/ingredients/lemon.glb` |
+| Brocciu et récipient | `public/models/ingredients/brocciu.glb` |
+| Pot de sucre | `public/models/ingredients/sugar-pot.glb` |
+| Fouet | `public/models/tools/whisk.glb` |
+| Moule | `public/models/tools/baking-pan.glb` |
+| Préparation crue | `public/models/food/fiadone-raw.glb` |
+| Fiadone cuit | `public/models/food/fiadone-baked.glb` |
+| Place corse compacte | `public/models/buildings/corsican-village.glb` |
+| Décor de cuisine | `public/models/decorations/kitchen-decor.glb` |
+| Main gauche riggée | `public/models/hands/hand_left.glb` |
+| Main droite riggée | `public/models/hands/hand_right.glb` |
+
+Les fichiers Draco doivent être placés dans `public/decoders/draco/` et les transcodeurs Basis/KTX2 dans `public/decoders/basis/`. Les textures optimisées vont dans `public/textures/` (512 ou 1024 px dans la plupart des cas).
+
+## Audio
+
+L’infrastructure accepte des sons globaux et positionnels. Les chemins prévus sont déclarés dans `AUDIO_MANIFEST` dans `src/core/AudioManager.js` : ambiance village, vent, oiseaux, œuf, fouet, versement, four et validation. En l’absence de fichiers audio, des sons synthétiques légers assurent le feedback.
+
+## Vérifications
 
 ```bash
-npm run dev:quest
+npm run build
+npm run test:physics
 ```
 
-L’adresse LAN seule n’est généralement pas considérée comme sécurisée par WebXR. Utiliser un certificat HTTPS approuvé ou un tunnel HTTPS pour tester directement depuis le casque.
+La suite physique couvre les chutes, projections rapides, lâchers au bord du comptoir et prises répétées. Les colliders sont invisibles par défaut. Pour les afficher explicitement :
 
-## Remplacer les placeholders
+```text
+http://localhost:5173/?physicsDebug=1
+```
 
-`AssetManager.loadModel()` charge les GLB. Les futurs fichiers sont classés dans :
-
-- `public/models/environment/`
-- `public/models/ingredients/`
-- `public/models/tools/`
-- `public/models/characters/`
-- `public/models/hands/`
-- `public/models/food/`
-
-La recette se trouve dans `src/recipes/FiadoneRecipe.js`, et son comportement dans `src/recipes/RecipeManager.js`.
-
-Les placeholders visuels remplaçables sont isolés dans `src/objects/placeholders/`. Les formes de collision se règlent dans `KitchenScene.registerPhysics()`.
+Le commutateur global se trouve dans `src/core/DebugConfig.js` et reste à `false` pour la version normale.
