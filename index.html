@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#16241d" />
+    <meta name="description" content="À Tavula, jeu de cuisine corse en réalité virtuelle WebXR." />
+    <title>À Tavula VR — Cuisine corse</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="scene-container" aria-label="Jeu de cuisine corse en réalité virtuelle"></div>
+      <header class="hud">
+        <div class="brand"><span>AT</span><div><b>À TAVULA</b><small>CUCINA CORSA • VR</small></div></div>
+        <div class="score">SCORE <b id="desktop-score">000</b></div>
+      </header>
+      <section class="desktop-card">
+        <p class="eyebrow">COMMANDE EN COURS</p>
+        <h1>Fiadone</h1>
+        <p id="desktop-step">Le client arrive…</p>
+        <div class="progress"><span id="desktop-progress"></span></div>
+        <small>Mode écran : cliquez-glissez les objets. Le gameplay principal utilise les contrôleurs WebXR.</small>
+      </section>
+      <div id="status" class="status">Initialisation de la cuisine…</div>
+      <button id="sound-toggle" class="sound-toggle" aria-label="Activer la voix">♪</button>
+      <div id="unsupported" class="unsupported" hidden>WebXR immersive-vr n’est pas disponible sur ce navigateur. Le mode écran reste accessible.</div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
